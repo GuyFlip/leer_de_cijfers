@@ -33,6 +33,9 @@
             background-color: green;
             width: 100%;
             transition: width 4s linear;
+            position: relative;
+            margin-top: 30px;
+            direction: rtl;
         }
         #feedback {
             font-size: 50px;
@@ -77,10 +80,11 @@
             currentNumber = numbers[randomIndex];
             document.getElementById("number").innerText = randomIndex + 1;
             document.getElementById("timer").style.width = "100%";
+            document.getElementById("timer").style.transition = "none";
+            document.getElementById("timer").offsetHeight; // Trigger reflow
+            document.getElementById("timer").style.transition = "width 4s linear";
+            document.getElementById("timer").style.width = "0%";
             document.getElementById("feedback").innerText = "";
-            setTimeout(() => {
-                document.getElementById("timer").style.width = "0%";
-            }, 4000);
             questionIndex++;
         }
 
