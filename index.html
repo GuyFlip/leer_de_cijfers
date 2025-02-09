@@ -87,7 +87,7 @@
         
         function nextQuestion() {
             if (questionCount >= totalQuestions) {
-                document.getElementById("message").innerText = "Spel afgelopen! Je score: " + score + "/10";
+                document.getElementById("message").innerText = "Spel afgelopen! Je score: " + score + "/10\nWil je nog een keer spelen?";
                 document.getElementById("startButton").disabled = false;
                 recognition.stop(); // Stop microfoon aan het einde
                 return;
@@ -136,8 +136,13 @@
             recognition.onresult = function(event) {
                 if (!isAnswering) return;
                 let spokenNumber = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
-                console.log("Gezegd:", spokenNumber);
-                checkAnswer(spokenNumber);
+                const numberWords = {
+                    "een": 1, "twee": 2, "drie": 3, "vier": 4, "vijf": 5, "fijf": 5, "veif": 5, "fuf": 5, "vij": 5, "fij": 5,
+                    "zes": 6, "zeven": 7, "acht": 8, "negen": 9, "tien": 10
+                };
+                let spokenValue = numberWords[spoken] || parseInt(spoken);
+                console.log("Gezegd:", spoken, "Geconverteerd naar:", spokenValue, "Correcte antwoord:", currentNumber);
+                checkAnswer(spokenValue);
             };
             
             recognition.onerror = function(event) {
@@ -146,28 +151,19 @@
             };
         }
         
-        function checkAnswer(spoken) {
+        function checkAnswer(spokenNumber) {
             if (!isAnswering) return;
             isAnswering = false;
             clearTimeout(timer);
-            
-            const numberWords = {
-                "een": 1, "twee": 2, "drie": 3, "vier": 4, "vijf": 5,
-                "zes": 6, "zeven": 7, "acht": 8, "negen": 9, "tien": 10
-            };
-            
-            let spokenNumber = numberWords[spoken] || parseInt(spoken);
-            console.log("Herkenning:", spoken, "Geconverteerd naar:", spokenNumber, "Correcte antwoord:", currentNumber);
             
             if (spokenNumber === currentNumber) {
                 score++;
                 document.getElementById("score").innerText = "Score: " + score;
                 document.getElementById("message").innerText = "✅ Correct!";
+                setTimeout(nextQuestion, 500); // Direct door naar de volgende vraag
             } else {
                 document.getElementById("message").innerText = "❌ Fout, probeer opnieuw.";
             }
-            
-            setTimeout(nextQuestion, 2000);
         }
     </script>
 </body>
