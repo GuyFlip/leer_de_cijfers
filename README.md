@@ -13,7 +13,6 @@
             width: 100%;
             height: 20px;
             background-color: green;
-            transition: width 4s linear;
         }
         .hidden { display: none; }
         .start-button {
@@ -79,9 +78,10 @@
         function startTimer() {
             let timerBar = document.getElementById("timer-bar");
             timerBar.style.width = "100%";
+            timerBar.style.transition = "width 4s linear";
             setTimeout(() => {
                 timerBar.style.width = "0%";
-            }, 4000);
+            }, 100);
             
             setTimeout(() => {
                 if (isAnswering) {
@@ -101,12 +101,12 @@
             
             recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
             recognition.lang = "nl-NL";
-            recognition.continuous = true;
+            recognition.continuous = false;
             recognition.interimResults = false;
             
             recognition.onresult = function(event) {
                 if (!isAnswering) return;
-                const spokenNumber = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+                const spokenNumber = event.results[0][0].transcript.trim().toLowerCase();
                 console.log("Gezegd:", spokenNumber);
                 checkAnswer(spokenNumber);
             };
