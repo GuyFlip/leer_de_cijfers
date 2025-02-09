@@ -30,18 +30,6 @@
             font-size: 18px;
             margin: 10px;
         }
-        #timer-bar {
-            height: 20px;
-            width: 100%;
-            background-color: lightgray;
-            position: relative;
-        }
-        #timer {
-            height: 100%;
-            width: 100%;
-            background-color: green;
-            position: absolute;
-        }
         .feedback {
             font-size: 50px;
         }
@@ -52,7 +40,6 @@
         <button id="start-btn">START SPEL</button>
         <div id="progress"></div>
         <div id="number"></div>
-        <div id="timer-bar"><div id="timer"></div></div>
         <div class="feedback" id="feedback"></div>
     </div>
 
@@ -70,13 +57,13 @@
             9: ["negen", "néggen", "neguh", "negenne", "neege"],
             10: ["tien", "tjien", "tîn", "tieën", "tinne"]
         };
-        let currentIndex = 0, score = 0, gameNumbers = [], recognition, timerInterval;
+        let currentIndex = 0, score = 0, gameNumbers = [], recognition;
         
         document.getElementById("start-btn").addEventListener("click", startGame);
         
         function startGame() {
             gameNumbers = [...numbers].sort(() => 0.5 - Math.random()).slice(0, 10);
-            currentIndex = 0;
+            currentIndex = -1;
             score = 0;
             document.getElementById("progress").textContent = `Score: 0 | Nog ${gameNumbers.length} vragen te gaan`;
             document.getElementById("start-btn").style.display = "none";
@@ -85,6 +72,7 @@
         }
         
         function nextQuestion() {
+            currentIndex++;
             if (currentIndex >= gameNumbers.length) {
                 document.getElementById("progress").textContent = `Spel voorbij! Je score: ${score}/10.`;
                 document.getElementById("start-btn").style.display = "block";
@@ -92,23 +80,6 @@
             }
             document.getElementById("number").textContent = gameNumbers[currentIndex];
             document.getElementById("feedback").textContent = "";
-            resetTimer();
-        }
-        
-        function resetTimer() {
-            clearInterval(timerInterval);
-            let width = 100;
-            document.getElementById("timer").style.width = width + "%";
-            timerInterval = setInterval(() => {
-                width -= 2.5;
-                document.getElementById("timer").style.width = width + "%";
-                if (width <= 0) {
-                    clearInterval(timerInterval);
-                    document.getElementById("feedback").textContent = "❌";
-                    currentIndex++;
-                    setTimeout(nextQuestion, 500);
-                }
-            }, 100);
         }
         
         function startSpeechRecognition() {
@@ -130,7 +101,6 @@
         }
         
         function checkAnswer(spokenText) {
-            clearInterval(timerInterval);
             const correctNumber = gameNumbers[currentIndex];
             if (pronunciations[correctNumber].includes(spokenText)) {
                 document.getElementById("feedback").textContent = "✅";
@@ -141,7 +111,6 @@
                 document.getElementById("number").style.backgroundColor = "lightcoral";
             }
             document.getElementById("progress").textContent = `Score: ${score} | Nog ${gameNumbers.length - (currentIndex + 1)} vragen te gaan`;
-            currentIndex++;
             setTimeout(() => {
                 document.getElementById("number").style.backgroundColor = "white";
                 nextQuestion();
