@@ -24,10 +24,20 @@
             border: none;
             cursor: pointer;
         }
+        .mic-button {
+            background-color: blue;
+            color: white;
+            font-size: 18px;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
     <h1>Leer Cijfers Spel</h1>
+    <button id="micButton" class="mic-button" onclick="requestMicPermission()">Activeer Microfoon</button>
     <button id="startButton" class="start-button" onclick="startGame()">START SPEL</button>
     <p id="score">Score: 0</p>
     <p id="progress">Vraag: 0 / 10</p>
@@ -43,6 +53,7 @@
         let recognition;
         let isAnswering = false;
         let timer;
+        let micPermissionGranted = false;
 
         document.addEventListener("keydown", function(event) {
             if (event.code === "Space") {
@@ -50,13 +61,26 @@
             }
         });
         
+        function requestMicPermission() {
+            initSpeechRecognition();
+            if (recognition) {
+                recognition.start();
+                setTimeout(() => recognition.stop(), 1000);
+                micPermissionGranted = true;
+                document.getElementById("message").innerText = "✅ Microfoon geactiveerd!";
+            }
+        }
+        
         function startGame() {
+            if (!micPermissionGranted) {
+                document.getElementById("message").innerText = "⚠️ Activeer eerst de microfoon!";
+                return;
+            }
             score = 0;
             questionCount = 0;
             document.getElementById("score").innerText = "Score: " + score;
             document.getElementById("progress").innerText = "Vraag: 0 / " + totalQuestions;
             document.getElementById("startButton").disabled = true;
-            initSpeechRecognition();
             nextQuestion();
         }
         
@@ -120,13 +144,6 @@
                 console.error("Spraakherkenning fout:", event.error);
                 document.getElementById("message").innerText = "⚠️ Spraakherkenning fout, probeer opnieuw.";
                 setTimeout(() => recognition.start(), 1000);
-            };
-            
-            recognition.onend = function() {
-                if (isAnswering) {
-                    console.warn("Spraakherkenning onverwacht gestopt. Herstarten...");
-                    recognition.start();
-                }
             };
         }
         
