@@ -60,6 +60,7 @@
         let questionIndex = 0;
         let recognition;
         let currentNumber;
+        let timerTimeout;
         let correctAlternatives = {
             "een": ["één", "un", "ééntje", "èn", "ien"],
             "twee": ["twee", "tvee", "tweej", "dwee", "twi"],
@@ -88,6 +89,7 @@
                 alert("Spel voorbij! Score: " + score + "\nWil je nog een keer spelen?");
                 return;
             }
+            clearTimeout(timerTimeout);
             let randomIndex = Math.floor(Math.random() * numbers.length);
             currentNumber = numbers[randomIndex];
             document.getElementById("number").innerText = randomIndex + 1;
@@ -95,12 +97,16 @@
             document.getElementById("feedback").innerText = "";
             document.getElementById("remaining-questions").innerText = `Nog ${10 - questionIndex} vragen te gaan`;
             questionIndex++;
+            timerTimeout = setTimeout(() => {
+                document.getElementById("feedback").innerText = "❌";
+                askQuestion();
+            }, 4000);
         }
 
         function resetTimer() {
             document.getElementById("timer").style.width = "100%";
             document.getElementById("timer").style.transition = "none";
-            document.getElementById("timer").offsetHeight; // Trigger reflow
+            document.getElementById("timer").offsetHeight;
             document.getElementById("timer").style.transition = "width 4s linear";
             document.getElementById("timer").style.width = "0%";
         }
@@ -123,15 +129,15 @@
         }
 
         function checkAnswer(answer) {
+            clearTimeout(timerTimeout);
             if (answer === currentNumber || (correctAlternatives[currentNumber] && correctAlternatives[currentNumber].includes(answer))) {
                 score++;
                 document.getElementById("score").innerText = "Score: " + score;
                 document.getElementById("feedback").innerText = "✅";
-                askQuestion();
             } else {
                 document.getElementById("feedback").innerText = "❌";
-                setTimeout(askQuestion, 1000);
             }
+            setTimeout(askQuestion, 1000);
         }
 
         document.getElementById("start-button").addEventListener("click", startGame);
