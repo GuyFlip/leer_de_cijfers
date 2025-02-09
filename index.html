@@ -7,7 +7,8 @@
     <style>
         body {
             text-align: center;
-            font-family: Arial, sans-serif;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #ffebcd;
         }
         #game-container {
             margin-top: 50px;
@@ -21,31 +22,49 @@
             align-items: center;
             height: 300px;
             width: 300px;
+            border: 10px solid #ff9800;
+            border-radius: 20px;
+            background-color: white;
+            animation: pop 0.5s ease-in-out;
+        }
+        @keyframes pop {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
         #start-btn {
-            font-size: 20px;
-            padding: 10px 20px;
-            background-color: green;
+            font-size: 24px;
+            padding: 15px 30px;
+            background-color: #4caf50;
             color: white;
             border: none;
+            border-radius: 12px;
             cursor: pointer;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+        }
+        #start-btn:hover {
+            background-color: #45a049;
         }
         #progress {
-            font-size: 18px;
-            margin: 10px;
+            font-size: 22px;
+            margin: 15px;
+            font-weight: bold;
         }
         .feedback {
             font-size: 50px;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <div id="game-container">
-        <button id="start-btn">START SPEL</button>
+        <button id="start-btn">🎲 START SPEL 🎲</button>
         <div id="progress"></div>
         <div id="number"></div>
         <div class="feedback" id="feedback"></div>
     </div>
+
+    <audio id="correct-sound" src="https://www.fesliyanstudios.com/play-mp3/4386"></audio>
+    <audio id="wrong-sound" src="https://www.fesliyanstudios.com/play-mp3/4392"></audio>
 
     <script>
         const numbers = [1,2,3,4,5,6,7,8,9,10];
@@ -94,7 +113,7 @@
             recognition = new webkitSpeechRecognition();
             recognition.lang = "nl-NL";
             recognition.continuous = true;
-            recognition.interimResults = false; // Teruggezet naar vorige versie zonder interim resultaten
+            recognition.interimResults = false;
             recognition.start();
             
             recognition.onresult = function(event) {
@@ -109,10 +128,12 @@
             if (pronunciations[correctNumber].includes(spokenText)) {
                 document.getElementById("feedback").textContent = "✅";
                 document.getElementById("number").style.backgroundColor = "lightgreen";
+                document.getElementById("correct-sound").play();
                 score++;
             } else {
                 document.getElementById("feedback").textContent = "❌";
                 document.getElementById("number").style.backgroundColor = "lightcoral";
+                document.getElementById("wrong-sound").play();
             }
             document.getElementById("progress").textContent = `Score: ${score} | Nog ${gameNumbers.length - (currentIndex + 1)} vragen te gaan`;
             setTimeout(() => {
