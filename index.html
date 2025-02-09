@@ -5,99 +5,134 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cijfers Spel</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
-        #start { background-color: green; color: white; padding: 15px; font-size: 20px; cursor: pointer; border: none; }
-        #cijfer { font-size: 100px; color: blue; margin: 20px; }
-        #score, #vragen { font-size: 20px; }
-        #feedback { font-size: 50px; }
-        #timer { width: 100%; height: 10px; background: green; transition: width 4s linear; }
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        #game-container {
+            margin-top: 50px;
+        }
+        #number {
+            font-size: 100px;
+            color: blue;
+            margin: 20px;
+            transition: background-color 0.3s ease;
+        }
+        #start-btn {
+            font-size: 20px;
+            padding: 10px 20px;
+            background-color: green;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #progress {
+            font-size: 18px;
+            margin: 10px;
+        }
+        #timer-bar {
+            height: 20px;
+            width: 100%;
+            background-color: lightgray;
+            position: relative;
+        }
+        #timer {
+            height: 100%;
+            width: 100%;
+            background-color: green;
+            position: absolute;
+        }
+        .feedback {
+            font-size: 50px;
+        }
     </style>
 </head>
 <body>
-    <h1>Cijfers Spel</h1>
-    <button id="start">START SPEL</button>
-    <div id="cijfer"></div>
-    <div id="vragen"></div>
-    <div id="score">Score: 0</div>
-    <div id="feedback"></div>
-    <div id="timer"></div>
-    
+    <div id="game-container">
+        <button id="start-btn">START SPEL</button>
+        <div id="progress"></div>
+        <div id="number"></div>
+        <div id="timer-bar"><div id="timer"></div></div>
+        <div class="feedback" id="feedback"></div>
+    </div>
+
     <script>
-        const cijfers = ["een", "twee", "drie", "vier", "vijf", "zes", "zeven", "acht", "negen", "tien"];
-        let score = 0;
-        let vragenTeGaan = 10;
-        let currentCijfer = "";
-        let recognition;
-
-        document.getElementById("start").addEventListener("click", startSpel);
-        document.addEventListener("keydown", (e) => { if (e.code === "Space") startSpel(); });
-
-        function startSpel() {
+        const numbers = [1,2,3,4,5,6,7,8,9,10];
+        let currentIndex = 0, score = 0, gameNumbers = [], recognition, timerInterval;
+        
+        document.getElementById("start-btn").addEventListener("click", startGame);
+        
+        function startGame() {
+            gameNumbers = [...numbers].sort(() => 0.5 - Math.random()).slice(0, 10);
+            currentIndex = 0;
             score = 0;
-            vragenTeGaan = 10;
-            document.getElementById("score").innerText = "Score: 0";
-            document.getElementById("feedback").innerText = "";
-            document.getElementById("start").style.display = "none";
-            startSpraakherkenning();
-            volgendeVraag();
+            document.getElementById("progress").textContent = `Score: 0 | Nog ${gameNumbers.length} vragen te gaan`;
+            document.getElementById("start-btn").style.display = "none";
+            startSpeechRecognition();
+            nextQuestion();
         }
-
-        function startSpraakherkenning() {
-            recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            recognition.lang = "nl-NL";
-            recognition.continuous = true;
-            recognition.onresult = function(event) {
-                const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
-                controleerAntwoord(transcript);
-            };
-            recognition.start();
-        }
-
-        function volgendeVraag() {
-            if (vragenTeGaan === 0) {
-                alert("Spel afgelopen! Je score is: " + score);
-                document.getElementById("start").style.display = "block";
+        
+        function nextQuestion() {
+            if (currentIndex >= gameNumbers.length) {
+                document.getElementById("progress").textContent = `Spel voorbij! Je score: ${score}/10.`;
+                document.getElementById("start-btn").style.display = "block";
                 return;
             }
-            vragenTeGaan--;
-            currentCijfer = cijfers[Math.floor(Math.random() * 10)];
-            document.getElementById("cijfer").innerText = currentCijfer;
-            document.getElementById("vragen").innerText = "Vragen te gaan: " + vragenTeGaan;
+            document.getElementById("number").textContent = gameNumbers[currentIndex];
+            document.getElementById("feedback").textContent = "";
             resetTimer();
         }
-
+        
         function resetTimer() {
-            document.getElementById("timer").style.width = "100%";
-            setTimeout(() => { foutAntwoord(); }, 4000);
+            clearInterval(timerInterval);
+            let width = 100;
+            document.getElementById("timer").style.width = width + "%";
+            timerInterval = setInterval(() => {
+                width -= 2.5;
+                document.getElementById("timer").style.width = width + "%";
+                if (width <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById("feedback").textContent = "❌";
+                    currentIndex++;
+                    setTimeout(nextQuestion, 500);
+                }
+            }, 100);
         }
-
-        function controleerAntwoord(antwoord) {
-            const varianten = {
-                "een": ["een", "één", "un", "ééntje", "èn", "ien"],
-                "twee": ["twee", "tvee", "tweej", "dwee", "twi"],
-                "drie": ["drie", "dríé", "dree", "dri-j", "d'rie"],
-                "vier": ["vier", "vír", "fieër", "vear", "fjoer"],
-                "vijf": ["vijf", "víjf", "vaaf", "veejf", "vijef"],
-                "zes": ["zes", "zès", "zis", "ses", "seis"],
-                "zeven": ["zeven", "zéven", "zeuve", "zeuvene", "zêve"],
-                "acht": ["acht", "agt", "achtuh", "ocht", "ogt"],
-                "negen": ["negen", "néggen", "neguh", "negenne", "neege"],
-                "tien": ["tien", "tjien", "tîn", "tieën", "tinne"]
-            };
-            
-            if (varianten[currentCijfer].includes(antwoord)) {
-                score++;
-                document.getElementById("score").innerText = "Score: " + score;
-                document.getElementById("feedback").innerText = "✅";
-            } else {
-                document.getElementById("feedback").innerText = "❌";
+        
+        function startSpeechRecognition() {
+            if (!('webkitSpeechRecognition' in window)) {
+                alert("Spraakherkenning wordt niet ondersteund.");
+                return;
             }
-            setTimeout(volgendeVraag, 1000);
+            recognition = new webkitSpeechRecognition();
+            recognition.lang = "nl-NL";
+            recognition.continuous = true;
+            recognition.interimResults = false;
+            recognition.start();
+            
+            recognition.onresult = function(event) {
+                const spokenText = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
+                checkAnswer(spokenText);
+            };
         }
-
-        function foutAntwoord() {
-            document.getElementById("feedback").innerText = "❌";
-            setTimeout(volgendeVraag, 1000);
+        
+        function checkAnswer(spokenText) {
+            clearInterval(timerInterval);
+            const correctNumber = gameNumbers[currentIndex];
+            if (spokenText == correctNumber.toString()) {
+                document.getElementById("feedback").textContent = "✅";
+                document.getElementById("number").style.backgroundColor = "lightgreen";
+                score++;
+            } else {
+                document.getElementById("feedback").textContent = "❌";
+                document.getElementById("number").style.backgroundColor = "lightcoral";
+            }
+            document.getElementById("progress").textContent = `Score: ${score} | Nog ${gameNumbers.length - (currentIndex + 1)} vragen te gaan`;
+            currentIndex++;
+            setTimeout(() => {
+                document.getElementById("number").style.backgroundColor = "white";
+                nextQuestion();
+            }, 500);
         }
     </script>
 </body>
