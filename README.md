@@ -40,7 +40,8 @@
         let questionCount = 0;
         const totalQuestions = 10;
         let recognition;
-        
+        let isAnswering = false;
+
         document.addEventListener("keydown", function(event) {
             if (event.code === "Space") {
                 startGame();
@@ -66,6 +67,7 @@
             currentNumber = Math.floor(Math.random() * 10) + 1;
             document.getElementById("number").innerText = currentNumber;
             document.getElementById("message").innerText = "";
+            isAnswering = true;
             startTimer();
             startListening();
         }
@@ -78,9 +80,11 @@
             }, 100);
             
             setTimeout(() => {
-                if (recognition) recognition.stop();
-                document.getElementById("message").innerText = "❌ Te laat!";
-                setTimeout(nextQuestion, 1000);
+                if (isAnswering) {
+                    document.getElementById("message").innerText = "❌ Te laat!";
+                    isAnswering = false;
+                    setTimeout(nextQuestion, 2000);
+                }
             }, 4000);
         }
         
@@ -95,6 +99,8 @@
             recognition.start();
             
             recognition.onresult = function(event) {
+                if (!isAnswering) return;
+                
                 const spokenNumber = event.results[0][0].transcript.trim().toLowerCase();
                 checkAnswer(spokenNumber);
             };
@@ -105,12 +111,17 @@
         }
         
         function checkAnswer(spoken) {
+            if (!isAnswering) return;
+            isAnswering = false;
+            
             const numberWords = {
                 "een": 1, "twee": 2, "drie": 3, "vier": 4, "vijf": 5,
                 "zes": 6, "zeven": 7, "acht": 8, "negen": 9, "tien": 10
             };
             
             let spokenNumber = numberWords[spoken] || parseInt(spoken);
+            console.log("Gezegd:", spoken, "Geconverteerd naar:", spokenNumber);
+            
             if (spokenNumber === currentNumber) {
                 score++;
                 document.getElementById("score").innerText = "Score: " + score;
@@ -118,7 +129,8 @@
             } else {
                 document.getElementById("message").innerText = "❌ Fout, probeer opnieuw.";
             }
-            setTimeout(nextQuestion, 1000);
+            
+            setTimeout(nextQuestion, 2000);
         }
     </script>
 </body>
