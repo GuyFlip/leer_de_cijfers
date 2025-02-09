@@ -159,7 +159,7 @@
                 score++;
                 document.getElementById("score").innerText = "Score: " + score;
                 document.getElementById("message").innerText = "✅ Correct!";
-                nextQuestion(); // Direct door naar de volgende vraag
+                setTimeout(nextQuestion, 500); // Direct door naar de volgende vraag
             } else {
                 document.getElementById("message").innerText = "❌ Fout, probeer opnieuw.";
             }
