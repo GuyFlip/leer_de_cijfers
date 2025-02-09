@@ -37,7 +37,6 @@
             transition: width 4s linear;
             position: relative;
             margin-top: 30px;
-            direction: rtl;
         }
         #feedback {
             font-size: 50px;
@@ -80,8 +79,8 @@
             document.getElementById("score").innerText = "Score: 0";
             document.getElementById("feedback").innerText = "";
             document.getElementById("remaining-questions").innerText = "Nog 10 vragen te gaan";
-            askQuestion();
             startSpeechRecognition();
+            askQuestion();
         }
 
         function askQuestion() {
@@ -93,10 +92,10 @@
             let randomIndex = Math.floor(Math.random() * numbers.length);
             currentNumber = numbers[randomIndex];
             document.getElementById("number").innerText = randomIndex + 1;
-            resetTimer();
             document.getElementById("feedback").innerText = "";
             document.getElementById("remaining-questions").innerText = `Nog ${10 - questionIndex} vragen te gaan`;
             questionIndex++;
+            resetTimer();
             timerTimeout = setTimeout(() => {
                 document.getElementById("feedback").innerText = "❌";
                 askQuestion();
@@ -137,7 +136,7 @@
             } else {
                 document.getElementById("feedback").innerText = "❌";
             }
-            setTimeout(askQuestion, 1000);
+            setTimeout(askQuestion, 500);
         }
 
         document.getElementById("start-button").addEventListener("click", startGame);
