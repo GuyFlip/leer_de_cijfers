@@ -13,14 +13,14 @@
             margin-top: 50px;
         }
         #number {
-            font-size: 200px;
+            font-size: 250px;
             color: blue;
-            margin: 50px auto;
+            margin: 60px auto;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 250px;
-            width: 250px;
+            height: 300px;
+            width: 300px;
         }
         #start-btn {
             font-size: 20px;
@@ -94,11 +94,11 @@
             recognition = new webkitSpeechRecognition();
             recognition.lang = "nl-NL";
             recognition.continuous = true;
-            recognition.interimResults = false;
+            recognition.interimResults = true; // Direct feedback geven
             recognition.start();
             
             recognition.onresult = function(event) {
-                const spokenText = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
+                let spokenText = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
                 console.log("Gesproken tekst:", spokenText);
                 checkAnswer(spokenText);
             };
@@ -106,7 +106,7 @@
         
         function checkAnswer(spokenText) {
             const correctNumber = gameNumbers[currentIndex];
-            if (pronunciations[correctNumber].includes(spokenText)) {
+            if (pronunciations[correctNumber].some(word => spokenText.includes(word))) {
                 document.getElementById("feedback").textContent = "✅";
                 document.getElementById("number").style.backgroundColor = "lightgreen";
                 score++;
@@ -118,7 +118,7 @@
             setTimeout(() => {
                 document.getElementById("number").style.backgroundColor = "white";
                 nextQuestion();
-            }, 100);
+            }, 200);
         }
     </script>
 </body>
