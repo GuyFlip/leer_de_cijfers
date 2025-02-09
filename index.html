@@ -13,6 +13,7 @@
             width: 100%;
             height: 20px;
             background-color: green;
+            transition: width 4s linear;
         }
         .hidden { display: none; }
         .start-button {
@@ -41,6 +42,8 @@
         const totalQuestions = 10;
         let recognition;
         let isAnswering = false;
+        let timer;
+        let timerBar;
 
         document.addEventListener("keydown", function(event) {
             if (event.code === "Space") {
@@ -65,25 +68,27 @@
                 return;
             }
             
+            clearTimeout(timer);
+            isAnswering = true;
             questionCount++;
             document.getElementById("progress").innerText = "Vraag: " + questionCount + " / " + totalQuestions;
             currentNumber = Math.floor(Math.random() * 10) + 1;
             document.getElementById("number").innerText = currentNumber;
             document.getElementById("message").innerText = "";
-            isAnswering = true;
+            
             startTimer();
             recognition.start();
         }
         
         function startTimer() {
-            let timerBar = document.getElementById("timer-bar");
+            timerBar = document.getElementById("timer-bar");
             timerBar.style.width = "100%";
             timerBar.style.transition = "width 4s linear";
             setTimeout(() => {
                 timerBar.style.width = "0%";
             }, 100);
             
-            setTimeout(() => {
+            timer = setTimeout(() => {
                 if (isAnswering) {
                     document.getElementById("message").innerText = "❌ Te laat!";
                     isAnswering = false;
@@ -128,6 +133,7 @@
         function checkAnswer(spoken) {
             if (!isAnswering) return;
             isAnswering = false;
+            clearTimeout(timer);
             
             const numberWords = {
                 "een": 1, "twee": 2, "drie": 3, "vier": 4, "vijf": 5,
