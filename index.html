@@ -4,7 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cijfers Spel</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        #game-container {
+            margin-top: 50px;
+        }
+        #number {
+            font-size: 100px;
+            color: blue;
+        }
+        #start-button {
+            font-size: 24px;
+            background-color: green;
+            color: white;
+            padding: 15px;
+            border: none;
+            cursor: pointer;
+        }
+        #score {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+        #timer {
+            height: 20px;
+            background-color: green;
+            width: 100%;
+            transition: width 4s linear;
+        }
+        #feedback {
+            font-size: 50px;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
     <div id="game-container">
@@ -12,7 +46,73 @@
         <div id="number"></div>
         <div id="timer"></div>
         <div id="score">Score: 0</div>
+        <div id="feedback"></div>
     </div>
-    <script src="script.js"></script>
+    <script>
+        const numbers = ["een", "twee", "drie", "vier", "vijf", "zes", "zeven", "acht", "negen", "tien"];
+        let score = 0;
+        let questionIndex = 0;
+        let recognition;
+        let currentNumber;
+        let correctAlternatives = {
+            "een": ["één"],
+            "vijf": ["fijf", "veif", "fuf", "vij", "fij"]
+        };
+
+        function startGame() {
+            score = 0;
+            questionIndex = 0;
+            document.getElementById("score").innerText = "Score: 0";
+            document.getElementById("feedback").innerText = "";
+            askQuestion();
+            startSpeechRecognition();
+        }
+
+        function askQuestion() {
+            if (questionIndex >= 10) {
+                alert("Spel voorbij! Score: " + score + "\nWil je nog een keer spelen?");
+                return;
+            }
+            let randomIndex = Math.floor(Math.random() * numbers.length);
+            currentNumber = numbers[randomIndex];
+            document.getElementById("number").innerText = randomIndex + 1;
+            document.getElementById("timer").style.width = "100%";
+            document.getElementById("feedback").innerText = "";
+            setTimeout(() => {
+                document.getElementById("timer").style.width = "0%";
+            }, 4000);
+            questionIndex++;
+        }
+
+        function startSpeechRecognition() {
+            if (!('webkitSpeechRecognition' in window)) {
+                alert("Spraakherkenning wordt niet ondersteund op deze browser.");
+                return;
+            }
+            recognition = new webkitSpeechRecognition();
+            recognition.lang = "nl-NL";
+            recognition.continuous = true;
+            recognition.interimResults = false;
+            recognition.start();
+
+            recognition.onresult = (event) => {
+                let transcript = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+                checkAnswer(transcript);
+            };
+        }
+
+        function checkAnswer(answer) {
+            if (answer === currentNumber || (correctAlternatives[currentNumber] && correctAlternatives[currentNumber].includes(answer))) {
+                score++;
+                document.getElementById("score").innerText = "Score: " + score;
+                document.getElementById("feedback").innerText = "✅";
+                setTimeout(askQuestion, 1000);
+            } else {
+                document.getElementById("feedback").innerText = "❌";
+            }
+        }
+
+        document.getElementById("start-button").addEventListener("click", startGame);
+    </script>
 </body>
 </html>
