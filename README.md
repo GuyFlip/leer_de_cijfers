@@ -70,7 +70,7 @@
             document.getElementById("message").innerText = "";
             isAnswering = true;
             startTimer();
-            if (recognition) recognition.start();
+            recognition.start();
         }
         
         function startTimer() {
@@ -84,6 +84,7 @@
                 if (isAnswering) {
                     document.getElementById("message").innerText = "❌ Te laat!";
                     isAnswering = false;
+                    recognition.stop();
                     setTimeout(nextQuestion, 2000);
                 }
             }, 4000);
@@ -103,11 +104,21 @@
             recognition.onresult = function(event) {
                 if (!isAnswering) return;
                 const spokenNumber = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+                console.log("Gezegd:", spokenNumber);
                 checkAnswer(spokenNumber);
             };
             
             recognition.onerror = function(event) {
-                document.getElementById("message").innerText = "❌ Er is een fout opgetreden bij de spraakherkenning.";
+                console.error("Spraakherkenning fout:", event.error);
+                document.getElementById("message").innerText = "⚠️ Spraakherkenning fout, probeer opnieuw.";
+                setTimeout(() => recognition.start(), 1000); // Herstart na een fout
+            };
+            
+            recognition.onend = function() {
+                if (isAnswering) {
+                    console.warn("Spraakherkenning onverwacht gestopt. Herstarten...");
+                    recognition.start();
+                }
             };
         }
         
@@ -121,7 +132,7 @@
             };
             
             let spokenNumber = numberWords[spoken] || parseInt(spoken);
-            console.log("Gezegd:", spoken, "Geconverteerd naar:", spokenNumber);
+            console.log("Herkenning:", spoken, "Geconverteerd naar:", spokenNumber, "Correcte antwoord:", currentNumber);
             
             if (spokenNumber === currentNumber) {
                 score++;
