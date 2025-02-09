@@ -4,25 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cijfers Spel</title>
-    <style>
-        body { text-align: center; font-family: Arial, sans-serif; }
-        #numberDisplay { font-size: 50px; color: blue; margin: 20px; }
-        #timerBar { width: 100%; height: 10px; background-color: green; transition: width 0.1s; }
-        #feedback { font-size: 40px; margin: 20px; }
-        #scoreDisplay { font-size: 20px; margin: 10px; }
-        #startButton { font-size: 20px; padding: 10px; background-color: green; color: white; border: none; cursor: pointer; }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-    <h1>Cijfers Spel</h1>
-    <button id="startButton">START SPEL</button>
-    <div id="numberDisplay">?</div>
-    <div id="timerBar"></div>
-    <div id="feedback"></div>
-    <div id="scoreDisplay">Score: 0/10</div>
-
-    <script src="script.js"></script> <!-- Verwijst naar het externe JS-bestand -->
-
+    <div id="game-container">
+        <button id="start-button">START SPEL</button>
+        <div id="number"></div>
+        <div id="timer"></div>
+        <div id="score">Score: 0</div>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
