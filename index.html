@@ -117,7 +117,7 @@
                 if (isAnswering) {
                     document.getElementById("message").innerText = "❌ Te laat!";
                     isAnswering = false;
-                    setTimeout(nextQuestion, 2000);
+                    setTimeout(nextQuestion, 1000);
                 }
             }, 4000);
         }
@@ -135,10 +135,10 @@
             
             recognition.onresult = function(event) {
                 if (!isAnswering) return;
+                clearTimeout(timer); // Stop de timer zodra er een antwoord is
                 let spokenNumber = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
                 const numberWords = {
-                    "een": 1, "twee": 2, "drie": 3, "vier": 4, "vijf": 5, "fijf": 5, "veif": 5, "fuf": 5, "vij": 5, "fij": 5,
-                    "zes": 6, "zeven": 7, "acht": 8, "negen": 9, "tien": 10
+                    "een": 1, "twee": 2, "drie": 3, "vier": 4, "vijf": 5, "zes": 6, "zeven": 7, "acht": 8, "negen": 9, "tien": 10
                 };
                 let spokenValue = numberWords[spoken] || parseInt(spoken);
                 console.log("Gezegd:", spoken, "Geconverteerd naar:", spokenValue, "Correcte antwoord:", currentNumber);
