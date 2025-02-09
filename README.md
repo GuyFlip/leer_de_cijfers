@@ -8,7 +8,7 @@
         body { text-align: center; font-family: Arial, sans-serif; }
         #number { font-size: 100px; margin: 20px; color: blue; }
         #message { font-size: 30px; margin: 20px; }
-        #score { font-size: 24px; margin: 10px; }
+        #score, #progress { font-size: 24px; margin: 10px; }
         #timer-bar {
             width: 100%;
             height: 20px;
@@ -30,6 +30,7 @@
     <h1>Leer Cijfers Spel</h1>
     <button id="startButton" class="start-button" onclick="startGame()">START SPEL</button>
     <p id="score">Score: 0</p>
+    <p id="progress">Vraag: 0 / 10</p>
     <div id="number"></div>
     <div id="timer-bar"></div>
     <p id="message"></p>
@@ -52,6 +53,7 @@
             score = 0;
             questionCount = 0;
             document.getElementById("score").innerText = "Score: " + score;
+            document.getElementById("progress").innerText = "Vraag: 0 / " + totalQuestions;
             document.getElementById("startButton").disabled = true;
             initSpeechRecognition();
             nextQuestion();
@@ -65,6 +67,7 @@
             }
             
             questionCount++;
+            document.getElementById("progress").innerText = "Vraag: " + questionCount + " / " + totalQuestions;
             currentNumber = Math.floor(Math.random() * 10) + 1;
             document.getElementById("number").innerText = currentNumber;
             document.getElementById("message").innerText = "";
@@ -78,7 +81,7 @@
             timerBar.style.width = "100%";
             setTimeout(() => {
                 timerBar.style.width = "0%";
-            }, 100);
+            }, 4000);
             
             setTimeout(() => {
                 if (isAnswering) {
@@ -111,7 +114,7 @@
             recognition.onerror = function(event) {
                 console.error("Spraakherkenning fout:", event.error);
                 document.getElementById("message").innerText = "⚠️ Spraakherkenning fout, probeer opnieuw.";
-                setTimeout(() => recognition.start(), 1000); // Herstart na een fout
+                setTimeout(() => recognition.start(), 1000);
             };
             
             recognition.onend = function() {
