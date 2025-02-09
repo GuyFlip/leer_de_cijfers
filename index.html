@@ -43,7 +43,6 @@
         let recognition;
         let isAnswering = false;
         let timer;
-        let timerBar;
 
         document.addEventListener("keydown", function(event) {
             if (event.code === "Space") {
@@ -81,12 +80,13 @@
         }
         
         function startTimer() {
-            timerBar = document.getElementById("timer-bar");
+            let timerBar = document.getElementById("timer-bar");
+            timerBar.style.transition = "none";
             timerBar.style.width = "100%";
-            timerBar.style.transition = "width 4s linear";
             setTimeout(() => {
+                timerBar.style.transition = "width 4s linear";
                 timerBar.style.width = "0%";
-            }, 100);
+            }, 50);
             
             timer = setTimeout(() => {
                 if (isAnswering) {
