@@ -58,6 +58,18 @@
 
     <script>
         const numbers = [1,2,3,4,5,6,7,8,9,10];
+        const pronunciations = {
+            1: ["een", "één", "un", "ééntje", "èn", "ien"],
+            2: ["twee", "tvee", "tweej", "dwee", "twi"],
+            3: ["drie", "dríé", "dree", "dri-j", "d'rie"],
+            4: ["vier", "vír", "fieër", "vear", "fjoer"],
+            5: ["vijf", "víjf", "vaaf", "veejf", "vijef"],
+            6: ["zes", "zès", "zis", "ses", "seis"],
+            7: ["zeven", "zéven", "zeuve", "zeuvene", "zêve"],
+            8: ["acht", "agt", "achtuh", "ocht", "ogt"],
+            9: ["negen", "néggen", "neguh", "negenne", "neege"],
+            10: ["tien", "tjien", "tîn", "tieën", "tinne"]
+        };
         let currentIndex = 0, score = 0, gameNumbers = [], recognition, timerInterval;
         
         document.getElementById("start-btn").addEventListener("click", startGame);
@@ -112,6 +124,7 @@
             
             recognition.onresult = function(event) {
                 const spokenText = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
+                console.log("Gesproken tekst:", spokenText);
                 checkAnswer(spokenText);
             };
         }
@@ -119,7 +132,7 @@
         function checkAnswer(spokenText) {
             clearInterval(timerInterval);
             const correctNumber = gameNumbers[currentIndex];
-            if (spokenText == correctNumber.toString()) {
+            if (pronunciations[correctNumber].includes(spokenText)) {
                 document.getElementById("feedback").textContent = "✅";
                 document.getElementById("number").style.backgroundColor = "lightgreen";
                 score++;
