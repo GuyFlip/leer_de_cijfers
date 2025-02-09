@@ -7,7 +7,7 @@
     <style>
         body {
             text-align: center;
-            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-family: Arial, sans-serif;
             background-color: #ffebcd;
         }
         #game-container {
@@ -63,9 +63,6 @@
         <div class="feedback" id="feedback"></div>
     </div>
 
-    <audio id="correct-sound" src="https://www.fesliyanstudios.com/play-mp3/4386"></audio>
-    <audio id="wrong-sound" src="https://www.fesliyanstudios.com/play-mp3/4392"></audio>
-
     <script>
         const numbers = [1,2,3,4,5,6,7,8,9,10];
         const pronunciations = {
@@ -107,7 +104,7 @@
         
         function startSpeechRecognition() {
             if (!('webkitSpeechRecognition' in window)) {
-                alert("Spraakherkenning wordt niet ondersteund.");
+                alert("Spraakherkenning wordt niet ondersteund op deze browser. Probeer Chrome of Edge.");
                 return;
             }
             recognition = new webkitSpeechRecognition();
@@ -128,12 +125,10 @@
             if (pronunciations[correctNumber].includes(spokenText)) {
                 document.getElementById("feedback").textContent = "✅";
                 document.getElementById("number").style.backgroundColor = "lightgreen";
-                document.getElementById("correct-sound").play();
                 score++;
             } else {
                 document.getElementById("feedback").textContent = "❌";
                 document.getElementById("number").style.backgroundColor = "lightcoral";
-                document.getElementById("wrong-sound").play();
             }
             document.getElementById("progress").textContent = `Score: ${score} | Nog ${gameNumbers.length - (currentIndex + 1)} vragen te gaan`;
             setTimeout(() => {
