@@ -61,8 +61,16 @@
         let recognition;
         let currentNumber;
         let correctAlternatives = {
-            "een": ["één"],
-            "vijf": ["fijf", "veif", "fuf", "vij", "fij"]
+            "een": ["één", "un", "ééntje", "èn", "ien"],
+            "twee": ["twee", "tvee", "tweej", "dwee", "twi"],
+            "drie": ["drie", "dríé", "dree", "dri-j", "d'rie"],
+            "vier": ["vier", "vír", "fieër", "vear", "fjoer"],
+            "vijf": ["vijf", "víjf", "vaaf", "veejf", "vijef"],
+            "zes": ["zes", "zès", "zis", "ses", "seis"],
+            "zeven": ["zeven", "zéven", "zeuve", "zeuvene", "zêve"],
+            "acht": ["acht", "agt", "achtuh", "ocht", "ogt"],
+            "negen": ["negen", "néggen", "neguh", "negenne", "neege"],
+            "tien": ["tien", "tjien", "tîn", "tieën", "tinne"]
         };
 
         function startGame() {
@@ -83,14 +91,18 @@
             let randomIndex = Math.floor(Math.random() * numbers.length);
             currentNumber = numbers[randomIndex];
             document.getElementById("number").innerText = randomIndex + 1;
+            resetTimer();
+            document.getElementById("feedback").innerText = "";
+            document.getElementById("remaining-questions").innerText = `Nog ${10 - questionIndex} vragen te gaan`;
+            questionIndex++;
+        }
+
+        function resetTimer() {
             document.getElementById("timer").style.width = "100%";
             document.getElementById("timer").style.transition = "none";
             document.getElementById("timer").offsetHeight; // Trigger reflow
             document.getElementById("timer").style.transition = "width 4s linear";
             document.getElementById("timer").style.width = "0%";
-            document.getElementById("feedback").innerText = "";
-            document.getElementById("remaining-questions").innerText = `Nog ${10 - questionIndex} vragen te gaan`;
-            questionIndex++;
         }
 
         function startSpeechRecognition() {
@@ -115,7 +127,7 @@
                 score++;
                 document.getElementById("score").innerText = "Score: " + score;
                 document.getElementById("feedback").innerText = "✅";
-                setTimeout(askQuestion, 1000);
+                askQuestion();
             } else {
                 document.getElementById("feedback").innerText = "❌";
                 setTimeout(askQuestion, 1000);
