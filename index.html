@@ -1,113 +1,28 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const startButton = document.getElementById("startButton");
-    const numberDisplay = document.getElementById("numberDisplay");
-    const scoreDisplay = document.getElementById("scoreDisplay");
-    const timerBar = document.getElementById("timerBar");
-    const feedback = document.getElementById("feedback");
-    
-    let score = 0;
-    let currentNumber = 0;
-    let questions = [];
-    let questionIndex = 0;
-    let recognition;
-    let timer;
-    
-    function startGame() {
-        score = 0;
-        scoreDisplay.innerText = `Score: ${score}/10`;
-        questions = generateRandomNumbers();
-        questionIndex = 0;
-        startRecognition();
-        nextQuestion();
-    }
-    
-    function generateRandomNumbers() {
-        return Array.from({ length: 10 }, () => Math.floor(Math.random() * 10) + 1);
-    }
-    
-    function nextQuestion() {
-        if (questionIndex >= questions.length) {
-            setTimeout(() => {
-                alert("Spel afgelopen! Nog een keer spelen?");
-                startGame();
-            }, 500);
-            return;
-        }
-        
-        currentNumber = questions[questionIndex];
-        numberDisplay.innerText = currentNumber;
-        questionIndex++;
-        startTimer();
-    }
-    
-    function startTimer() {
-        timerBar.style.width = "100%";
-        let timeLeft = 4000;
-        clearInterval(timer);
-        
-        timer = setInterval(() => {
-            timeLeft -= 100;
-            timerBar.style.width = `${(timeLeft / 4000) * 100}%`;
-            
-            if (timeLeft <= 0) {
-                clearInterval(timer);
-                feedback.innerHTML = "❌";
-                setTimeout(nextQuestion, 1000);
-            }
-        }, 100);
-    }
-    
-    function startRecognition() {
-        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = "nl-NL";
-        recognition.continuous = true;
-        recognition.interimResults = false;
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cijfers Spel</title>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; }
+        #numberDisplay { font-size: 50px; color: blue; margin: 20px; }
+        #timerBar { width: 100%; height: 10px; background-color: green; transition: width 0.1s; }
+        #feedback { font-size: 40px; margin: 20px; }
+        #scoreDisplay { font-size: 20px; margin: 10px; }
+        #startButton { font-size: 20px; padding: 10px; background-color: green; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
 
-        recognition.onresult = function (event) {
-            let transcript = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
-            checkAnswer(transcript);
-        };
-        
-        recognition.onerror = function (event) {
-            console.error("Spraakherkenning fout:", event.error);
-        };
-        
-        recognition.start();
-    }
-    
-    function checkAnswer(answer) {
-        const validAnswers = getValidPronunciations(currentNumber);
-        if (validAnswers.includes(answer)) {
-            score++;
-            scoreDisplay.innerText = `Score: ${score}/10`;
-            feedback.innerHTML = "✅";
-            clearInterval(timer);
-            setTimeout(nextQuestion, 1000);
-        } else {
-            feedback.innerHTML = "❌";
-        }
-    }
-    
-    function getValidPronunciations(number) {
-        const alternatives = {
-            1: ["een", "één"],
-            2: ["twee"],
-            3: ["drie"],
-            4: ["vier"],
-            5: ["vijf", "fijf", "veif", "fuf", "vij", "fij"],
-            6: ["zes"],
-            7: ["zeven"],
-            8: ["acht"],
-            9: ["negen"],
-            10: ["tien"]
-        };
-        return alternatives[number] || [];
-    }
-    
-    startButton.addEventListener("click", startGame);
-    document.addEventListener("keydown", (event) => {
-        if (event.code === "Space") {
-            startGame();
-        }
-    });
-});
+    <h1>Cijfers Spel</h1>
+    <button id="startButton">START SPEL</button>
+    <div id="numberDisplay">?</div>
+    <div id="timerBar"></div>
+    <div id="feedback"></div>
+    <div id="scoreDisplay">Score: 0/10</div>
+
+    <script src="script.js"></script> <!-- Verwijst naar het externe JS-bestand -->
+
+</body>
+</html>
