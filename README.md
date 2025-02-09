@@ -53,6 +53,7 @@
             questionCount = 0;
             document.getElementById("score").innerText = "Score: " + score;
             document.getElementById("startButton").disabled = true;
+            initSpeechRecognition();
             nextQuestion();
         }
         
@@ -69,7 +70,7 @@
             document.getElementById("message").innerText = "";
             isAnswering = true;
             startTimer();
-            startListening();
+            if (recognition) recognition.start();
         }
         
         function startTimer() {
@@ -88,7 +89,7 @@
             }, 4000);
         }
         
-        function startListening() {
+        function initSpeechRecognition() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
                 document.getElementById("message").innerText = "❌ Spraakherkenning wordt niet ondersteund in deze browser.";
                 return;
@@ -96,12 +97,12 @@
             
             recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
             recognition.lang = "nl-NL";
-            recognition.start();
+            recognition.continuous = true;
+            recognition.interimResults = false;
             
             recognition.onresult = function(event) {
                 if (!isAnswering) return;
-                
-                const spokenNumber = event.results[0][0].transcript.trim().toLowerCase();
+                const spokenNumber = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
                 checkAnswer(spokenNumber);
             };
             
