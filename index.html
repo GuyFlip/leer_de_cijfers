@@ -117,7 +117,7 @@
                 if (isAnswering) {
                     document.getElementById("message").innerText = "❌ Te laat!";
                     isAnswering = false;
-                    setTimeout(nextQuestion, 1000);
+                    nextQuestion();
                 }
             }, 4000);
         }
@@ -130,18 +130,17 @@
             
             recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
             recognition.lang = "nl-NL";
-            recognition.continuous = true; // Houdt de microfoon aan gedurende het spel
+            recognition.continuous = true;
             recognition.interimResults = false;
             
             recognition.onresult = function(event) {
                 if (!isAnswering) return;
-                clearTimeout(timer); // Stop de timer zodra er een antwoord is
+                clearTimeout(timer);
                 let spokenNumber = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
                 const numberWords = {
                     "een": 1, "twee": 2, "drie": 3, "vier": 4, "vijf": 5, "zes": 6, "zeven": 7, "acht": 8, "negen": 9, "tien": 10
                 };
                 let spokenValue = numberWords[spoken] || parseInt(spoken);
-                console.log("Gezegd:", spoken, "Geconverteerd naar:", spokenValue, "Correcte antwoord:", currentNumber);
                 checkAnswer(spokenValue);
             };
             
@@ -160,7 +159,7 @@
                 score++;
                 document.getElementById("score").innerText = "Score: " + score;
                 document.getElementById("message").innerText = "✅ Correct!";
-                setTimeout(nextQuestion, 500); // Direct door naar de volgende vraag
+                nextQuestion(); // Direct door naar de volgende vraag
             } else {
                 document.getElementById("message").innerText = "❌ Fout, probeer opnieuw.";
             }
